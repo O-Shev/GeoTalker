@@ -1,0 +1,220 @@
+version: "3.9"
+name: geotalker
+
+#TODO map /confirm-account -> <core>/client/authorize/confirm-account on nginx
+
+
+x-minio-buckets-telegram: &minio-buckets-telegram
+  MINIO_BUCKET_TELEGRAM_PROFILE_PHOTO: telegram.profile-photo
+  MINIO_BUCKET_TELEGRAM_PHOTO: telegram.photo
+  MINIO_BUCKET_TELEGRAM_VIDEO: telegram.video
+  MINIO_BUCKET_TELEGRAM_VIDEO_NOTE: telegram.video-note
+  MINIO_BUCKET_TELEGRAM_AUDIO: telegram.audio
+  MINIO_BUCKET_TELEGRAM_VOICE_NOTE: telegram.voice-note
+  MINIO_BUCKET_TELEGRAM_STICKER: telegram.sticker
+  MINIO_BUCKET_TELEGRAM_ANIMATION: telegram.animation
+
+x-minio-buckets-boundaries: &minio-buckets-boundaries
+  MINIO_BUCKET_BOUNDARIES: boundaries
+
+
+x-minio-root: &minio-root
+  MINIO_ROOT_USER:
+  MINIO_ROOT_PASSWORD:
+
+x-minio-access: &minio-access
+  MINIO_HOST: minio
+  MINIO_PORT: 9000
+  MINIO_USE_SSL: false
+  MINIO_ACCESS_KEY:
+  MINIO_SECRET_KEY:
+
+
+x-postgres-root: &postgres-root
+  POSTGRES_USER:
+  POSTGRES_PASSWORD:
+
+x-postgres-access: &postgres-access
+  <<: *postgres-root
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: geotalker
+
+x-oauth2-google: &oauth2-google
+  OAUTH2_GOOGLE_CLIENT_ID:
+  OAUTH2_GOOGLE_CLIENT_SECRET:
+  OAUTH2_GOOGLE_SCOPE: openid,profile,email
+
+x-email-service: &email-service
+  EMAIL_SERVICE_HOST:
+  EMAIL_SERVICE_PORT:
+  EMAIL_SERVICE_USERNAME:
+  EMAIL_SERVICE_PASSWORD:
+
+
+
+
+services:
+  postgres:
+    image: postgres:16.3-alpine3.19
+    environment:
+      POSTGRES_DB: geotalker
+      <<: *postgres-root
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgresql:/docker-entrypoint-initdb.d
+      - postgresql-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U geotalker -d geotalker" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+
+  minio:
+    image: minio/minio:RELEASE.2024-05-10T01-41-38Z.fips
+    command: server /data --console-address ":9001"
+    environment:
+      <<: *minio-root
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+
+
+  minio-init:
+    image: minio/mc
+    environment:
+      <<: [*minio-root, *minio-access, *minio-buckets-boundaries, *minio-buckets-telegram]
+    volumes:
+      - ./minio:/init.d
+    entrypoint: /init.d/minio-init.sh
+    depends_on:
+      - minio
+
+
+
+  nominatim:
+    container_name: nominatim
+    image: mediagis/nominatim:4.4
+    ports:
+      - "8081:8080"
+    volumes:
+      - nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      PBF_PATH: cant_be_empty_even_if_import_is_finished
+      NOMINATIM_PASSWORD: 16101
+      POSTGRES_SHARED_BUFFERS: 512MB
+      POSTGRES_MAINTAINENCE_WORK_MEM: 512MB
+      POSTGRES_AUTOVACUUM_WORK_MEM: 128MB
+      POSTGRES_WORK_MEM: 16MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 2GB
+      POSTGRES_SYNCHRONOUS_COMMIT: off
+      POSTGRES_MAX_WAL_SIZE: 512MB
+      POSTGRES_CHECKPOINT_TIMEOUT: 10min
+      POSTGRES_CHECKPOINT_COMPLETION_TARGET: 0.9
+
+
+
+  boundaries:
+    build:
+      context: ./boundaries
+    ports:
+      - "8082:8080"
+    environment:
+      API_NOMINATIM_URL: http://nominatim:8080
+      API_PORT: 8080
+      <<: [*minio-access, *minio-buckets-boundaries]
+    depends_on:
+      - nominatim
+      - minio
+
+  core:
+    build:
+      context: ./core
+    ports:
+      - "8083:8080"
+    environment:
+      API_TELEGRAM_URL: http://telegram:8080
+      API_TELEGRAM_API_ID:
+      API_NOMINATIM_URL: http://nominatim:8080
+      API_BOUNDARIES_URL: http://boundaries:8080
+      HOST_URL: https://geotalker.com
+      <<: [*postgres-access, *minio-access, *oauth2-google, *email-service]
+    depends_on:
+      - minio
+      - postgres
+
+
+  telegram:
+    build:
+      context: ./telegram
+    ports:
+      - "8084:8080"
+    environment:
+      API_PORT: 8080
+      PHONE_NUMBER:
+      API_ID:
+      API_HASH:
+      DATABASE_DIRECTORY: tdb
+      CORE_URL: http://core:8080/telegram
+      FILE_MAX_SIZE_TO_DOWNLOAD: 1e+7
+      <<: [*postgres-access, *minio-buckets-telegram, *minio-access]
+    depends_on:
+      - minio
+      - postgres
+    restart: unless-stopped
+
+
+
+
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - core
+
+  nginx:
+    image: nginx:1.27.0-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - client
+      - core
+
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN:
+
+
+networks:
+  defailt:
+    name: geotalker
+
+volumes:
+  postgresql-data:
+  minio-data:
+  nominatim-data:
+    external: true
+

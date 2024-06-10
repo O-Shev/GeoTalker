@@ -1,0 +1,49 @@
+spring:
+  host-url: ${HOST_URL}
+
+  api:
+    telegram:
+      url: ${API_TELEGRAM_URL}
+      api-id: ${API_TELEGRAM_API_ID}
+    nominatim:
+      url: ${API_NOMINATIM_URL}
+    boundaries:
+      url: ${API_BOUNDARIES_URL}
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+            scope: ${OAUTH2_GOOGLE_SCOPE}
+
+
+
+  minio:
+    host: ${MINIO_HOST}
+    port: ${MINIO_PORT}
+    use-ssl: ${MINIO_USE_SSL}
+    access-key: ${MINIO_ACCESS_KEY}
+    secret-key: ${MINIO_SECRET_KEY}
+
+
+  mail:
+    host: ${EMAIL_SERVICE_HOST}
+    port: ${EMAIL_SERVICE_PORT}
+    username: ${EMAIL_SERVICE_USERNAME}
+    password: ${EMAIL_SERVICE_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

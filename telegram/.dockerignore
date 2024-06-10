@@ -1,0 +1,7 @@
+.env.local
+/tdb
+/node_modules
+package-lock.json
+.gitignore
+.dockerignore
+Dockerfile
