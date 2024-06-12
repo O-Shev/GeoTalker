@@ -65,7 +65,7 @@ or find original source of some sensation that spreed thought all media.
 
 ## Project Structure
 ### common scheme
-![scheme of services](common_scheme.drawio.png)
+![scheme of services](./doc-src/common_scheme.drawio.png)
 
 ### services
 In total there are 9 services in the project. Each service deployed in docker container. And all projects is deployed by docker-compose.
@@ -136,4 +136,4 @@ For each schema creates related user:
 - Core user has all privileges on schema Core and usage privileges on schema Telegram
 - Telegram user has privileges (all) only on schema Telegram
 
-![postgresql scheme](postgresql_scheme.drawio.png)
+![postgresql scheme](./doc-src/postgresql_scheme.drawio.png)

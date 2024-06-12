@@ -62,7 +62,7 @@ services:
       <<: *postgres-root
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./postgresql:/docker-entrypoint-initdb.d
+      - ./backend/postgresql:/docker-entrypoint-initdb.d
       - postgresql-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -130,7 +130,7 @@ services:
 
   boundaries:
     build:
-      context: ./boundaries
+      context: ./backend/boundaries
     ports:
       - "8082:8080"
     environment:
@@ -143,7 +143,7 @@ services:
 
   core:
     build:
-      context: ./core
+      context: ./backend/core
     ports:
       - "8083:8080"
     environment:
@@ -160,7 +160,7 @@ services:
 
   telegram:
     build:
-      context: ./telegram
+      context: ./backend/telegram
     ports:
       - "8084:8080"
     environment:
@@ -183,7 +183,7 @@ services:
 
   client:
     build:
-      context: ./client
+      context: ./frontend/client
     ports:
       - "3000:80"
     depends_on:
