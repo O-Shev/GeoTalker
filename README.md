@@ -8,9 +8,9 @@
   * [Motivation](#motivation)
   * [Goal](#goal)
   * [Privacy considerations](#privacy-considerations)
-  * [Business plan development](#business-plan-development)
+  * [Future development plan](#business-plan-development)
 * [Project Structure](#project-structure)
-  * [common scheme](#common-scheme)
+  * [General deployment scheme](#common-scheme)
   * [services](#services)
     * [Client](#client)
     * [Core](#core)
@@ -25,56 +25,72 @@
 ---
 
 ## Description
-This application allows search and add to repository Telegram channels and groups (both public and private) related to some place on map and read their history.
+This application allows you to search and add to its repository Telegram repository channels (both public and private) associated with a specific location on the map and read their history.
 
 ### Motivation
-Idea of such application visited my mind when I was looking telegram groups related Israel or Palestine during their conflict. 
-I was interested what peoples talk about their situation, which info from mass media I can trust. This also applies to Russo-Ukrainian War.
-For example try to find telegram channel related to [Kramatorsk](https://www.google.com/maps/place/Kramatorsk,+Donetsk+Oblast/data=!4m2!3m1!1s0x40df97a4c0ea9b9b:0x6cfddec1592678ec?sa=X&ved=1t:242&ictx=111) city!
-you can type in telegram search engine *"Краматорск"* and what you can find of groups is only [✙ ЧАТ | Краматорский Район ✙](https://t.me/Oper_Kramatorskix_chat)
-that is just chat discussion for broadcast channel. In this chat the most messages (~90 %) are duplicates posts from its channel, plus ads.  
-Also in the same time exist telegram group [Chat ᴏɴʟɪɴᴇ 24/7️](https://t.me/+H1kt7FhYG341ZjQ6). 
-This group is private, so you can't find it just typing in search field of telegram application.
-In additional this group hasn't any identifiers that made relation with some place clear: 
-not title, not profile photo, even description doesn't have any mentions belonging to whatever.
-But this group is the most alive, active and large of all groups related to Kramatorsk. 
+The idea for such an application came to my mind when I was searching for Telegram channels that associate to Israel or Palestine 
+to learn more about their conflict. I was interested in what people themselves said about their situation in order 
+to understand what information from mass media I could trust. This also applies to the Russian-Ukrainian War. 
+For example, if you try to find a telegram channel related to the [Kramatorsk](https://www.google.com/maps/place/Kramatorsk,+Donetsk+Oblast/data=!4m2!3m1!1s0x40df97a4c0ea9b9b:0x6cfddec1592678ec?sa=X&ved=1t:242&ictx=111) city and enter *“Краматорск”* into the Telegram search, 
+all you can find from the groups offered to you is only [“✙ ЧАТ | Краматорский Район ✙”](https://t.me/Oper_Kramatorskix_chat), which is essentially just a discussion 
+of the channel’s posts. Thus, the majority of messages in this group (about 90%) are advertisements and posts from the channel.
+
+At the same time, there is a telegram group [“Chat ᴏɴʟɪɴᴇ 24/7️”](https://t.me/+H1kt7FhYG341ZjQ6). This is a private group, so it cannot be found through a search in Telegram. 
+In addition, this group does not have any obvious signs of belonging to any geographical location (other than the immediate conversation 
+in the group). Neither the name of the group, nor its photo, nor description refers us to the Kramatorsk city or any other geographical location. 
+However, this group has a larger number of participants and they are more active than in other groups related to the city of Kramatorsk, 
+which makes this group the most “alive” among others.
+
 
 ### Goal
-The main goal is to create service where visitors could find telegram (in feature also other social-media platforms, like WeChat and FB messenger) related to specific administrative or geographical place.
-Often admins of private channel and groups adds invite link in description (description of chats is present in application). So in this case get access to chat by visitors this application becomes easily.
-Also, visitor can be subscribed on chat related to his home city, so he can add it to repository — it is how to populate the repository of chats.  
-Some usage scenario:
-- You are interested in culture and news of some nation (see [Motivation](#Motivation))
-- You are traveling abroad, and you want to get some help with local things  
+The main goal is to create a service where visitors can find telegram groups and channels (in the future it is planned to add other social platforms 
+such as WeChat and Facebook messenger) associated with administrative or geographical units. Often, administrators of private channels and groups add 
+an invitation link to the channel description (the application also contains chats descriptions). This makes it easy for app visitors to access such chats. 
+Also, a visitor can be subscribed to such a chat and by logging into the application, he can add this chat to the application database - this is a way 
+to replenish the application database.
+
+Use cases:
+- Search for groups and channels related to the geographic location you are interested in;
+- Adding groups and channels to the system. 
 *local regulations, minibus schedule, small local markets or shops, whatever*
 
+Possible usage scenarios:
+- Consuming information from groups and channels in case of interest in the culture or news of a certain region (see [Motivation](#Motivation));
+- Get local help when traveling to a specific region (local regulations, bus schedule, small local shops and markets, etc.).
+
+
+
+
 ### Privacy considerations
-The leakage of confidential information of an individual user is not purpose of this project.
-Participants of telegram groups should not afraid to talk and spread information.
-To achieve this profile photo and name of user is replaced by generated info from [Datafaker](https://www.datafaker.net/documentation/usage/)
-and persist during one hour for selected group.  
-Also there are planing to trace and replace such info like card numbers, phone numbers and other.
+The application provides protection against leakage of sensitive data of individual users, groups and channels. 
+Participants as well as admins of groups and channels do not have to be afraid to spread information or communicate. 
+In order to achieve this GeoTalker replaces username and profile photo with generated output of [Datafaker](https://www.datafaker.net/documentation/usage/). 
+Concerning channels and groups, the application stores their data only for one hour.
+
+It is also planned to detect and replace bank card numbers, phone numbers and any sensitive information with fake data.
 
 
-### Business plan development
-If project will be a live, in future there are planing to make from this a tool for persons working in mass media:  
-when repository of chats will significant increase this project will become a big DB of messages related to specific place.
-These messages can process AI and give summary of what are discussing people in current time in specific place,
-or find original source of some sensation that spreed thought all media.
+
+### Future development plan
+If the project has a permanent audience and increases its number, then in the future it is planned to turn it into a tool for mass media workers. 
+When the number of groups and chats in the application repository increases significantly, by connecting AI tools it will be possible to create 
+a brief description of what people discussed in a certain location in a certain period of time or find the original source which is then cited 
+by some mass media.
 
 
 ## Project Structure
-### common scheme
+### General deployment scheme
 ![scheme of services](./doc-src/common_scheme.drawio.png)
 
-### services
-In total there are 9 services in the project. Each service deployed in docker container. And all projects is deployed by docker-compose.
-Here their description with its key features:
+### Components
+In total there are 9 components in the project. Each component is deployed in a Docker container. All components are deployed using docker-compose. 
+Following you can see key statements of each of them:
+
 #### Client
-- written with React
-- design library — [Material UI](https://mui.com/material-ui/)
-- for map interaction was chosen [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/guides)
-- yup, formik, notistack, axios, pako
+- written using the React framework
+- user interface design library – [Material UI](https://mui.com/material-ui/)
+- [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/guides) was selected to interact with the map 
+- another used tech: yup, formik, notistack, axios, pako
 
 #### Core
 - Spring Boot, Spring Security, Validation, e.t.c.
@@ -97,40 +113,42 @@ see [official doc](https://nominatim.org/release-docs/develop/admin/Import/#filt
 
 
 #### Boundaries
-Written on JS. Create boundaries in very compressed format and put it to object storage (Minio). 
-Takes GeoJson from Nominatim > simplify it > converts to [TopoJson](https://github.com/topojson/topojson) > compress and put to object storage.
-These steps are permanently needed for effective fetching and caching on client browser.
+Written in JS. Creates boundaries in a very compressed format and puts it to object storage (Minio). 
+Takes GeoJson from Nominatim > simplifies it > converts to [TopoJson](https://github.com/topojson/topojson) > compress and puts to object storage. 
+These steps are always necessary for efficient fetching and caching in the client browser.
 
-This service is delegated in external api service mostly for TopoJson JS library, because there are no native or Java library.
-An attempt was made to use [GraalVM](https://www.graalvm.org/), but problem related to race condition was occurred. 
-To avoid this there are needed copy GraalVM context in each new thread. But in this way performance compared to JS is very reduced (about ~20 times).
+This component is delegated to an external API service mainly for the TopoJson JS library since there is no native or Java library. 
+There was made an attempt to use [GraalVM](https://www.graalvm.org/), but a race condition occurred. To avoid this, you need to copy the GraalVM context to each new thread. 
+But this way the performance is greatly reduced compared to JS (about 20 times).
 
 
 #### Telegram *userbot*
-This service use [TDlib](https://core.telegram.org/tdlib) as native library for JS. This userbot pursues the following goals:
+This component uses [TDlib](https://core.telegram.org/tdlib) as native library for JS. This userbot has the following goals:
 - horizontal scaling
-- independent of another services
-- minimize sending requests to Telegram to reduce ban probability.
+- independence from other components
+- minimizing sending requests to Telegram to reduce the likelihood of a ban.
 
-TDlib has own inner DB - SQLite, but problem in using this DB is losing data (for example removes all message history from chat) when telegram decide to ban such userbot 
-or userbot is bans by admin of some private group. So, was decided to save all messages in external DB PostgreSQL. See section DB scheme 
+TDlib has its own internal database - SQLite, but the problem when using this database is the loss of data 
+(for example, deleting the entire message history from the chat) when Telegram decides to ban such a user bot or the user bot is banned 
+by the administrator of some private group/chat. Therefore, it was decided to save all messages in an external PostgreSQL database. See DB Schema section.
 
-For now, telegram userbot works in *passive* mode. It means that only updates from telegram we can get, 
-because it does not send queries (almost) to telegram. So currently with adding new chat on the map chat history not loads, 
-and only new message will be showed.
+At the moment, the Telegram userbot is working in passive mode. This means that we can only receive updates from 
+Telegram because it does not send requests (almost) to Telegram. Therefore, currently, when adding a new chat to the map, 
+the chat history is not loaded and only new messages are displayed.
+
 
 #### Minio
-[MinIO](https://min.io/) is a high-performance, S3 compatible object store.
-Here stores processed boundaries and more important - telegram files in one place from telegram userbots. 
-In this way telegram userbots don't download file if it is already downloaded from another userbot or another session.
+[MinIO](https://min.io/) is a high-performance object store compatible with S3. 
+Processed borders and, importantly, Telegram files are stored here in one place from Telegram userbots. 
+Thus, Telegram userbots do not download a file if it has already been downloaded from another userbot or another session.
 
 
 #### Cloudflared + Nginx
-Cloudflared establish tunnel connection with Cloudflare servers and allow to deploy project without public IP, + basic firewall.
-Nginx works as simple reverse proxy server to manage api queries.
+Cloudflared establishes a tunnel connection to Cloudflare servers and allows you to deploy a project without a public IP address + a basic firewall. 
+Nginx works as a simple reverse proxy to manage API requests.
 
 
-#### PostgreSQL scheme
+#### Database schema
 In Postgresql DB there are two schema: one for Core service and another one for Telegram *userbot* service.
 For each schema creates related user:
 - Core user has all privileges on schema Core and usage privileges on schema Telegram
