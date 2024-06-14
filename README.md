@@ -80,7 +80,7 @@ by some mass media.
 
 ## Project Structure
 ### General deployment scheme
-![scheme of services](./doc-src/common_scheme.drawio.png)
+![scheme of services](./doc-src/common_scheme_uml.drawio.png)
 
 ### Components
 In total there are 9 components in the project. Each component is deployed in a Docker container. All components are deployed using docker-compose. 
