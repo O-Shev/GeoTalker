@@ -80,7 +80,7 @@ by some mass media.
 
 ## Project Structure
 ### General deployment scheme
-![scheme of services](./doc-src/common_scheme_uml.drawio.png)
+![scheme of services](./doc-src/common_scheme.drawio.png)
 
 ### Components
 In total there are 9 components in the project. Each component is deployed in a Docker container. All components are deployed using docker-compose. 
@@ -149,9 +149,13 @@ Nginx works as a simple reverse proxy to manage API requests.
 
 
 #### Database schema
-In Postgresql DB there are two schema: one for Core service and another one for Telegram *userbot* service.
-For each schema creates related user:
-- Core user has all privileges on schema Core and usage privileges on schema Telegram
-- Telegram user has privileges (all) only on schema Telegram
+PostgreSQL is used as a Database Management System.
 
-![postgresql scheme](./doc-src/postgresql_scheme.drawio.png)
+There are 2 groups of tables in the database schema: the first one is used for Core component (named “core”) 
+and the second one is used for Telegram userbot component (named “telegram”).
+
+A corresponding user has been created for database: each of mentioned above groups:
+- Core user has all privileges to the “core” group tables and usage privileges to the “telegram” group tables
+- Telegram user has all privileges only to the “telegram” group tables
+
+![postgresql scheme](./doc-src/dbschema.png)
