@@ -16,6 +16,42 @@
 		<udt name="wiretap_status" udt_java_type="12" udt_precision="NONE" >
 			<udt_script><![CDATA[CREATE TYPE ${name} AS ENUM ('READY','WAITING','DEACTIVATED');]]></udt_script>
 		</udt>
+		<table name="&lt;&lt;enumeration&gt;&gt; interlink_type" prior="&lt;&lt;enumeration&gt;&gt;interlink_type" >
+			<column name="hash" type="varchar" jt="12" />
+			<column name="username" type="varchar" length="100" jt="12" />
+		</table>
+		<table name="&lt;&lt;enumeration&gt;&gt; osm_type" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="n" type="varchar" jt="12" />
+			<column name="w" type="varchar" jt="12" />
+			<column name="r" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; osm_type_r" unique="NORMAL" spec="USING " >
+				<column name="r" />
+			</index>
+		</table>
+		<table name="&lt;&lt;enumeration&gt;&gt; user_account_provider" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="google" type="varchar" jt="12" />
+			<column name="local" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; user_account_provider_google" unique="UNIQUE_KEY" >
+				<column name="google" />
+			</index>
+		</table>
+		<table name="&lt;&lt;enumeration&gt;&gt; user_account_role" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="root" type="varchar" jt="12" />
+			<column name="admin" type="varchar" jt="12" />
+			<column name="super_user" type="varchar" jt="12" />
+			<column name="user" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; user_account_role_user" unique="UNIQUE_KEY" >
+				<column name="user" />
+			</index>
+		</table>
+		<table name="&lt;&lt;enumeration&gt;&gt; wiretap_status" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="ready" type="varchar" jt="12" />
+			<column name="waiting" type="varchar" jt="12" />
+			<column name="deactivated" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; wiretap_status_ready" unique="UNIQUE_KEY" >
+				<column name="ready" />
+			</index>
+		</table>
 		<table name="confirmation_token" row_count="0" spec="" >
 			<column name="id" type="integer" length="32" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('core.confirmation_token_id_seq'::regclass)]]></defo>
@@ -39,7 +75,7 @@
 			<column name="id" type="integer" length="32" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('core.locality_id_seq'::regclass)]]></defo>
 			</column>
-			<column name="osm_type" type="osm_type" jt="12" mandatory="y" />
+			<column name="osm_type" prior="varchar" type="varchar" jt="12" mandatory="y" />
 			<column name="osm_id" type="bigint" length="64" jt="-5" mandatory="y" />
 			<column name="display_name" type="varchar" jt="12" />
 			<column name="rank_address" type="integer" length="32" jt="4" mandatory="y" />
@@ -56,6 +92,9 @@
 				<column name="osm_type" />
 				<column name="osm_id" />
 			</index>
+			<fk name="fk_locality_&lt;&lt;enumeration&gt;&gt; osm_type" to_schema="core" to_table="&lt;&lt;enumeration&gt;&gt; osm_type" >
+				<fk_column name="osm_type" pk="r" />
+			</fk>
 		</table>
 		<table name="mapping_info" row_count="0" spec="" >
 			<column name="id" type="integer" length="32" jt="4" mandatory="y" >
@@ -81,30 +120,36 @@
 			<column name="id" type="integer" length="32" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('core.user_account_id_seq'::regclass)]]></defo>
 			</column>
-			<column name="provider" type="user_account_provider" jt="12" mandatory="y" />
 			<column name="name" type="varchar" length="255" jt="12" />
 			<column name="profile_photo" type="varchar" length="255" jt="12" />
+			<column name="provider" type="varchar" jt="12" mandatory="y" />
 			<column name="email" type="varchar" length="320" jt="12" mandatory="y" />
 			<column name="verified" type="boolean" jt="16" />
 			<column name="password" type="varchar" length="255" jt="12" />
-			<column name="role" type="user_account_role" jt="12" mandatory="y" />
+			<column name="role" type="varchar" jt="12" mandatory="y" />
 			<column name="created_at" type="timestamp" jt="93" >
 				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
 			</column>
 			<index name="user_account_pkey" unique="PRIMARY_KEY" >
 				<column name="id" />
 			</index>
+			<fk name="fk_user_account_&lt;&lt;enumeration&gt;&gt; user_account_role" to_schema="core" to_table="&lt;&lt;enumeration&gt;&gt; user_account_role" >
+				<fk_column name="role" pk="user" />
+			</fk>
+			<fk name="fk_user_account_&lt;&lt;enumeration&gt;&gt; user_account_provider" to_schema="core" to_table="&lt;&lt;enumeration&gt;&gt; user_account_provider" >
+				<fk_column name="provider" pk="google" />
+			</fk>
 		</table>
 		<table name="wiretap" row_count="0" spec="" >
 			<column name="id" type="integer" length="32" jt="4" mandatory="y" >
 				<defo><![CDATA[nextval('core.wiretap_id_seq'::regclass)]]></defo>
 			</column>
+			<column name="status" type="varchar" jt="12" mandatory="y" />
 			<column name="user_account_id" type="integer" length="32" jt="4" mandatory="y" />
 			<column name="locality_id" type="integer" length="32" jt="4" mandatory="y" />
 			<column name="telegram_supergroup_id" type="bigint" length="64" jt="-5" />
 			<column name="telegram_supergroup_api_id" type="integer" length="32" jt="4" />
 			<column name="primary_interlink" type="varchar" length="255" jt="12" mandatory="y" />
-			<column name="status" type="wiretap_status" jt="12" mandatory="y" />
 			<column name="created_at" type="timestamp" jt="93" >
 				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
 			</column>
@@ -124,6 +169,9 @@
 			</fk>
 			<fk name="wiretap_user_account_id_fkey" to_schema="core" to_table="user_account" options="" >
 				<fk_column name="user_account_id" pk="id" />
+			</fk>
+			<fk name="fk_wiretap_&lt;&lt;enumeration&gt;&gt; wiretap_status" to_schema="core" to_table="&lt;&lt;enumeration&gt;&gt; wiretap_status" >
+				<fk_column name="status" pk="ready" />
 			</fk>
 		</table>
 		<sequence name="confirmation_token_id_seq" options="AS integer START WITH 1 INCREMENT BY 1" />
@@ -3103,11 +3151,29 @@ RETURN CASE WHEN (($2).typtype = 'd'::"char") THEN ($2).typtypmod ELSE ($1).attt
 		<udt name="message_sender_type" udt_java_type="12" udt_precision="NONE" >
 			<udt_script><![CDATA[CREATE TYPE ${name} AS ENUM ('messageSenderUser','messageSenderChat');]]></udt_script>
 		</udt>
+		<table name="&lt;&lt;enumeration&gt;&gt; chat_member_status" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="chat_member_status_creator" type="varchar" jt="12" />
+			<column name="chat_member_status_administrator" type="varchar" jt="12" />
+			<column name="chat_member_status_member" type="varchar" jt="12" />
+			<column name="chat_member_status_restricted" type="varchar" jt="12" />
+			<column name="chat_member_status_left" type="varchar" jt="12" />
+			<column name="chat_member_status_banned" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; chat_member_status_chat_member_status_creator" unique="UNIQUE_KEY" >
+				<column name="chat_member_status_creator" />
+			</index>
+		</table>
+		<table name="&lt;&lt;enumeration&gt;&gt; message_sender_type" prior="&lt;&lt;enumeration&gt;&gt; " >
+			<column name="message_sender_user" type="varchar" jt="12" />
+			<column name="message_sender_chat" type="varchar" jt="12" />
+			<index name="unq_&lt;&lt;enumeration&gt;&gt; message_sender_type_message_sender_chat" unique="UNIQUE_KEY" >
+				<column name="message_sender_chat" />
+			</index>
+		</table>
 		<table name="message" row_count="16231" spec="" >
 			<column name="api_id" type="integer" length="32" jt="4" mandatory="y" />
 			<column name="chat_id" type="bigint" length="64" jt="-5" mandatory="y" />
 			<column name="id" type="bigint" length="64" jt="-5" mandatory="y" />
-			<column name="sender_type" type="message_sender_type" jt="12" mandatory="y" />
+			<column name="sender_type" type="varchar" jt="12" mandatory="y" />
 			<column name="sender_id" type="bigint" length="64" jt="-5" mandatory="y" />
 			<column name="date" type="timestamp" jt="93" />
 			<column name="edit_date" type="timestamp" jt="93" />
@@ -3130,6 +3196,9 @@ RETURN CASE WHEN (($2).typtype = 'd'::"char") THEN ($2).typtypmod ELSE ($1).attt
 				<fk_column name="api_id" pk="api_id" />
 				<fk_column name="chat_id" pk="chat_id" />
 			</fk>
+			<fk name="fk_message_&lt;&lt;enumeration&gt;&gt; message_sender_type" to_schema="telegram" to_table="&lt;&lt;enumeration&gt;&gt; message_sender_type" >
+				<fk_column name="sender_type" pk="message_sender_chat" />
+			</fk>
 		</table>
 		<table name="supergroup" row_count="139" spec="" >
 			<column name="id" type="bigint" length="64" jt="-5" mandatory="y" />
@@ -3140,7 +3209,7 @@ RETURN CASE WHEN (($2).typtype = 'd'::"char") THEN ($2).typtypmod ELSE ($1).attt
 			<column name="member_count" type="integer" length="32" jt="4" />
 			<column name="username" type="varchar" jt="12" />
 			<column name="description" type="text" jt="12" />
-			<column name="member_status" type="chat_member_status" jt="12" />
+			<column name="member_status" type="varchar" jt="12" />
 			<column name="has_linked_chat" type="boolean" jt="16" />
 			<column name="linked_chat_id" type="bigint" length="64" jt="-5" />
 			<column name="is_channel" type="boolean" jt="16" />
@@ -3161,16 +3230,25 @@ RETURN CASE WHEN (($2).typtype = 'd'::"char") THEN ($2).typtypmod ELSE ($1).attt
 				<column name="api_id" />
 				<column name="chat_id" />
 			</index>
+			<fk name="fk_supergroup_&lt;&lt;enumeration&gt;&gt; chat_member_status" to_schema="telegram" to_table="&lt;&lt;enumeration&gt;&gt; chat_member_status" >
+				<fk_column name="member_status" pk="chat_member_status_creator" />
+			</fk>
 		</table>
 	</schema>
 	<layout name="Layout" id="Layout-6f6" joined_routing="y" show_column_type="y" show_relation="no_text" >
-		<entity schema="core" name="confirmation_token" color="3986C1" x="592" y="800" />
-		<entity schema="core" name="locality" color="3986C1" x="48" y="688" />
-		<entity schema="core" name="mapping_info" color="3986C1" x="64" y="432" />
+		<entity schema="telegram" name="&lt;&lt;enumeration&gt;&gt; chat_member_status" color="C1D8EE" x="720" y="48" />
+		<entity schema="telegram" name="&lt;&lt;enumeration&gt;&gt; message_sender_type" color="C1D8EE" x="720" y="240" />
+		<entity schema="core" name="&lt;&lt;enumeration&gt;&gt; osm_type" color="C1D8EE" x="720" y="912" />
+		<entity schema="core" name="&lt;&lt;enumeration&gt;&gt; user_account_provider" color="C1D8EE" x="720" y="624" />
+		<entity schema="core" name="&lt;&lt;enumeration&gt;&gt; user_account_role" color="C1D8EE" x="720" y="752" />
+		<entity schema="core" name="&lt;&lt;enumeration&gt;&gt; wiretap_status" color="C1D8EE" x="720" y="496" />
+		<entity schema="core" name="confirmation_token" color="3986C1" x="384" y="912" />
+		<entity schema="core" name="locality" color="3986C1" x="48" y="736" />
+		<entity schema="core" name="mapping_info" color="3986C1" x="48" y="512" />
 		<entity schema="telegram" name="message" color="3986C1" x="48" y="48" />
-		<entity schema="telegram" name="supergroup" color="3986C1" x="384" y="48" />
-		<entity schema="core" name="user_account" color="3986C1" x="320" y="720" />
-		<entity schema="core" name="wiretap" color="3986C1" x="368" y="432" />
+		<entity schema="telegram" name="supergroup" color="3986C1" x="368" y="48" />
+		<entity schema="core" name="user_account" color="3986C1" x="384" y="704" />
+		<entity schema="core" name="wiretap" color="3986C1" x="384" y="496" />
 	</layout>
 	<layout name="core" id="Layout-1849" show_relation="columns" >
 		<entity schema="core" name="confirmation_token" color="BED3F4" x="800" y="224" />

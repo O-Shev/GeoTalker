@@ -93,7 +93,7 @@ Following you can see key statements of each of them:
 - another used tech: yup, formik, notistack, axios, pako
 
 #### Core
-- Spring Boot, Spring Security, Validation, e.t.c.
+- Spring Boot, Spring Security, Validation, etc
 - Mapstruct, Lombok,  [Datafaker](https://www.datafaker.net/documentation/usage/)
 
 
@@ -158,4 +158,4 @@ A corresponding user has been created for database: each of mentioned above grou
 - Core user has all privileges to the “core” group tables and usage privileges to the “telegram” group tables
 - Telegram user has all privileges only to the “telegram” group tables
 
-![postgresql scheme](./doc-src/dbschema.png)
+![postgresql scheme](./doc-src/dbschema+enums.ps.png)
